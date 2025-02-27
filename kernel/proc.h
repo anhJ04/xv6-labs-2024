@@ -106,4 +106,7 @@ struct proc {
   char name[16];               // Process name (debugging)
   uint64 alarmticks;           // Alarm ticks
   void (*alarmhandler)();      // Alarm handler
+  struct trapframe *sigreturntrapframe;
+  uint64 realarmticks;         // re-Alarm ticks
+  void (*realarmhandler)();    // re-Alarm handler
 };
