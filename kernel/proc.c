@@ -722,6 +722,7 @@ sigreturn(void)
 {
   struct proc *p = myproc();
   memmove(p->trapframe, p->sigreturntrapframe, sizeof(struct trapframe));
-  sigalarm(p->realarmticks, p->realarmhandler);
-  return 0;
+  p->alarmticks = p->realarmticks;
+  p->alarmhandler = p->realarmhandler;
+  return p->trapframe->a0;
 }
