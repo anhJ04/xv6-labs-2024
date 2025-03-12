@@ -31,8 +31,8 @@ kinit()
 {
   initlock(&kmem.lock, "kmem");
   refcount = (uint8*)end;
-  memset(refcount, 0, (PHYSTOP - (uint64)end) / PGSIZE);
-  freerange(end+PGSIZE, (void*)PHYSTOP);
+  memset(refcount, 0, 8*PGSIZE);
+  freerange(end+8*PGSIZE, (void*)PHYSTOP);
 }
 
 void
@@ -53,7 +53,7 @@ kfree(void *pa)
 {
   struct run *r;
 
-  if(((uint64)pa % PGSIZE) != 0 || (char*)pa < end || (uint64)pa >= PHYSTOP)
+  if(((uint64)pa % PGSIZE) != 0 || (char*)pa < end+8*PGSIZE || (uint64)pa >= PHYSTOP)
     panic("kfree");
 
   if(refcount[((uint64)pa - (uint64)end) / PGSIZE] > 1){
@@ -95,7 +95,7 @@ kalloc(void)
 int
 incref(void *pa)
 {
-  if ((uint64)pa < (uint64)end+PGSIZE || (uint64)pa >= PHYSTOP)
+  if ((uint64)pa < (uint64)end+8*PGSIZE || (uint64)pa >= PHYSTOP)
     return -1; // Invalid address
 
   uint64 index = ((uint64)pa - (uint64)end) / PGSIZE;

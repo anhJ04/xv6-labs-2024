@@ -696,9 +696,15 @@ procdump(void)
 
 void handle_cow_fault(uint64 va) {
   struct proc *p = myproc();
+  if(va >= MAXVA){
+    setkilled(p);
+    return;
+  }
   pte_t *pte = walk(p->pagetable, va, 0);
-  if (pte == 0)
-    panic("handle_cow_fault: pte should exist");
+  if (pte == 0){
+    setkilled(p);
+    return;
+  }
   if((*pte & PTE_V) == 0)
     panic("handle_cow_fault: page not present");
   if((*pte & PTE_COW) == 0){
